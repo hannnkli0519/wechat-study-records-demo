@@ -1,0 +1,90 @@
+<view class="container">
+  <!-- 自定义导航栏 -->
+  <view class="nav-bar" style="height: {{navHeight}}px; padding-top: {{statusBarHeight}}px;">
+    <view class="nav-title">学习打卡</view>
+  </view>
+
+  <!-- 占位，防止内容被导航栏遮挡 -->
+  <view style="height: {{navHeight + statusBarHeight}}px;"></view>
+
+  <view class="main-content">
+    <!-- 连续打卡区域 -->
+    <view class="streak-card">
+      <view class="streak-info">
+        <text class="fire-icon">🔥</text>
+        <text class="streak-text">已连续打卡</text>
+        <text class="streak-num">{{punchInDays}}</text>
+        <text class="streak-unit">天</text>
+      </view>
+      <view class="streak-rank">击败了全国 <text class="rank-num">98.5%</text> 的用户</view>
+    </view>
+
+    <!-- 日期显示 -->
+    <view class="date-container">
+      <view class="date-full">{{fullDate}}</view>
+    </view>
+
+    <!-- 核心打卡按钮 -->
+    <view class="punch-container">
+      <view class="punch-btn {{isPunched ? 'punched' : 'breathing'}}" bindtap="handlePunchIn">
+        <view class="punch-inner">
+          <block wx:if="{{!isPunched}}">
+            <text class="punch-text">立即打卡</text>
+          </block>
+          <block wx:else>
+            <view class="check-icon">✓</view>
+            <text class="punch-text">已打卡</text>
+          </block>
+        </view>
+      </view>
+      <view class="punch-status">今日已有 1,248 位同学完成学习</view>
+    </view>
+
+    <!-- 内容输入区 -->
+    <view class="input-card">
+      <view class="input-header">今日学习计划/心得</view>
+      <textarea 
+        class="content-input" 
+        placeholder="记录今天的学习内容..." 
+        placeholder-class="placeholder"
+        bindinput="handleInput"
+        maxlength="200"
+      ></textarea>
+      <view class="input-footer">
+        <view class="input-actions">
+          <view class="action-btn" bindtap="chooseImage">
+            <image src="/images/icons/image.png" class="icon" wx:if="{{false}}"></image>
+            <text class="icon-placeholder">🖼️</text>
+          </view>
+          <view class="action-btn">
+            <text class="icon-placeholder">😊</text>
+          </view>
+        </view>
+        <view class="word-count">{{content.length}}/200</view>
+      </view>
+      
+      <!-- 图片预览区域 -->
+      <view class="image-preview" wx:if="{{images.length > 0}}">
+        <image 
+          wx:for="{{images}}" 
+          wx:key="*this" 
+          src="{{item}}" 
+          class="preview-img" 
+          mode="aspectFill"
+          bindtap="previewImage"
+          data-src="{{item}}"
+        ></image>
+      </view>
+    </view>
+
+    <!-- 每日励志语录 -->
+    <view class="quote-card">
+      <view class="quote-icon">“</view>
+      <view class="quote-content">{{currentQuote.text}}</view>
+      <view class="quote-author">—— {{currentQuote.author}}</view>
+    </view>
+
+    <!-- 底部留白 -->
+    <view class="footer-space"></view>
+  </view>
+</view>

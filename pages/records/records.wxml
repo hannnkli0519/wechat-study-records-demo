@@ -1,0 +1,78 @@
+<view class="container">
+  <view class="main-content">
+    <!-- 日历卡片 -->
+    <view class="card calendar-card">
+      <view class="calendar-header">
+        <view class="month-picker">
+          <text class="current-month">{{currentYear}}年{{currentMonth}}月</text>
+        </view>
+        <view class="calendar-nav">
+          <text class="nav-btn prev">‹</text>
+          <text class="nav-btn next">›</text>
+        </view>
+      </view>
+
+      <view class="weekday-header">
+        <text wx:for="{{['一', '二', '三', '四', '五', '六', '日']}}" wx:key="*this">{{item}}</text>
+      </view>
+
+      <view class="calendar-grid">
+        <view 
+          wx:for="{{calendar}}" 
+          wx:key="index" 
+          class="day-slot {{item.isCurrentMonth ? '' : 'not-current'}} {{item.isToday ? 'today' : ''}} {{item.isPunched ? 'punched' : ''}}"
+        >
+          <text class="day-num">{{item.day}}</text>
+          <view class="dot" wx:if="{{item.isPunched}}"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 统计卡片 -->
+    <view class="stats-container">
+      <view class="stat-card green">
+        <view class="stat-label">已签到</view>
+        <view class="stat-value">
+          <text class="num">{{stats.monthlyDays}}</text>
+          <text class="unit">天</text>
+        </view>
+      </view>
+      <view class="stat-card orange">
+        <view class="stat-label">打卡率</view>
+        <view class="stat-value">
+          <text class="num">{{stats.punchRate}}</text>
+          <text class="unit">%</text>
+        </view>
+      </view>
+      <view class="stat-card blue">
+        <view class="stat-label">补签卡</view>
+        <view class="stat-value">
+          <text class="num">{{stats.missedDays}}</text>
+          <text class="unit">张</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 历史记录列表 -->
+    <view class="history-section">
+      <view class="section-header">
+        <text class="section-title">最近记录</text>
+        <text class="view-all">查看全部</text>
+      </view>
+
+      <view class="history-list">
+        <view class="history-item" wx:for="{{history}}" wx:key="index">
+          <view class="item-line">
+            <view class="item-dot"></view>
+            <view class="item-time">{{item.date}} {{item.time}}</view>
+          </view>
+          <view class="item-content-box">
+            <view class="item-content">{{item.content}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="footer-space"></view>
+  </view>
+</view>

@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="edit-form">
+    <!-- 头像上传 -->
+    <view class="avatar-upload-section" bindtap="chooseAvatar">
+      <view class="avatar-wrapper">
+        <image class="avatar" src="{{avatarUrl || '/images/avatar.png'}}" mode="aspectFill"></image>
+        <view class="upload-mask">
+          <text class="camera-icon">📷</text>
+        </view>
+      </view>
+      <text class="upload-tip">点击更换头像</text>
+    </view>
+
+    <!-- 昵称修改 -->
+    <view class="input-group">
+      <text class="label">昵称</text>
+      <input 
+        class="nickname-input" 
+        value="{{nickname}}" 
+        placeholder="请输入昵称" 
+        bindinput="handleNicknameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="save-btn-wrapper">
+      <button class="save-btn" bindtap="saveProfile">保存修改</button>
+    </view>
+  </view>
+</view>

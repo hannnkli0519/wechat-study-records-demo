@@ -1,0 +1,17 @@
+# WeChat Miniprogram
+node_modules/
+dist/
+miniprogram_npm/
+
+# Keys
+private.key
+
+# OS
+.DS_Store
+.history/
+
+# IDE
+.vscode/
+.project
+.idea/
+project.private.config.json
