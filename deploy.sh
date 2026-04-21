@@ -33,9 +33,8 @@ fi
 echo "🚀 开始部署版本 v$VERSION (AppID: $APPID)..."
 
 # 5. 使用 miniprogram-ci 上传代码
-# 注意：这里需要先全局安装 npm install -g miniprogram-ci
 miniprogram-ci upload \
-  --pp ./miniprogram \
+  --pp ./ \
   --pkp ./private.key \
   --appid $APPID \
   --uv $VERSION \
