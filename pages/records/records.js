@@ -5,25 +5,19 @@ Page({
     currentYear: 0,
     currentMonth: 0,
     today: 0,
+    navHeight: 44,
+    statusBarHeight: 20,
     calendar: [],
     stats: {
-      monthlyDays: 19,
-      missedDays: 2,
-      punchRate: 95
+      monthlyDays: 0,
+      missedDays: 0,
+      punchRate: 0
     },
-    history: [
-      { date: '04月20日', time: '08:30', content: '完成了《英语语法精讲》前三章的复习，掌握了虚拟语气的核心用法。' },
-      { date: '04月19日', time: '10:15', content: '刷了50个雅思核心词汇，重点关注了环境类话题的表达。' },
-      { date: '04月18日', time: '21:00', content: '观看了一个小时的深度学习数学基础视频，理解了反向传播算法的数学原理。' },
-      { date: '04月17日', time: '07:45', content: '坚持晨读30分钟，模仿了TED演讲的语音语调，感觉口语更有节奏感了。' },
-      { date: '04月16日', time: '13:20', content: '整理了近一周的错题集，发现概率统计部分的逻辑还是容易混淆，明天重点突破。' },
-      { date: '04月15日', time: '19:40', content: '阅读了《代码整洁之道》第五章，学习了如何通过命名和函数拆分提高代码质量。' },
-      { date: '04月14日', time: '08:00', content: '早起打卡，完成了20分钟的冥想和10公里的晨跑。' },
-      { date: '04月13日', time: '22:30', content: '复习了React Hooks的高级用法，动手实现了一个自定义的useFetch。' }
-    ]
+    history: []
   },
 
   onLoad() {
+    this.calculateNavHeight()
     const now = new Date()
     const year = now.getFullYear()
     const month = now.getMonth() + 1
@@ -36,6 +30,20 @@ Page({
     })
 
     this.fetchCloudData()
+  },
+
+  calculateNavHeight() {
+    wx.getSystemInfo({
+      success: (res) => {
+        const menuButtonInfo = wx.getMenuButtonBoundingClientRect()
+        const statusBarHeight = res.statusBarHeight
+        const navHeight = menuButtonInfo.height + (menuButtonInfo.top - statusBarHeight) * 2
+        this.setData({
+          statusBarHeight,
+          navHeight
+        })
+      }
+    })
   },
 
   fetchCloudData() {
@@ -54,21 +62,28 @@ Page({
             content: item.content
           }))
           
-          // 获取已打卡日期列表用于日历
-          const punchedDays = rawHistory
-            .filter(item => {
-              const d = new Date(item.createTime)
-              return d.getFullYear() === this.data.currentYear && (d.getMonth() + 1) === this.data.currentMonth
-            })
-            .map(item => new Date(item.createTime).getDate())
+          // 获取已打卡日期列表（去重）用于日历
+          const punchedDaysSet = new Set()
+          rawHistory.forEach(item => {
+            const d = new Date(item.createTime)
+            if (d.getFullYear() === this.data.currentYear && (d.getMonth() + 1) === this.data.currentMonth) {
+              punchedDaysSet.add(d.getDate())
+            }
+          })
+          const punchedDays = Array.from(punchedDaysSet)
 
           this.setData({ history })
           this.generateCalendar(this.data.currentYear, this.data.currentMonth, punchedDays)
           
           // 更新统计数据
+          const monthlyDays = punchedDays.length
+          const missedDays = this.data.today - monthlyDays
+          const punchRate = Math.round((monthlyDays / this.data.today) * 100) || 0
+          
           this.setData({
-            'stats.monthlyDays': punchedDays.length,
-            'stats.punchRate': Math.round((punchedDays.length / this.data.today) * 100) || 0
+            'stats.monthlyDays': monthlyDays,
+            'stats.missedDays': missedDays < 0 ? 0 : missedDays,
+            'stats.punchRate': punchRate
           })
         }
       },
@@ -80,6 +95,32 @@ Page({
   },
 
   generateCalendar(year, month, punchedDays = []) {
+    const firstDay = new Date(year, month - 1, 1).getDay()
+    const daysInMonth = new Date(year, month, 0).getDate()
+    
+    // 0 is Sunday in getDay(), we want Monday as first column
+    const startOffset = firstDay === 0 ? 6 : firstDay - 1
+    
+    const calendar = []
+    
+    // Previous month filler
+    const prevMonthDays = new Date(year, month - 1, 0).getDate()
+    for (let i = startOffset - 1; i >= 0; i--) {
+      calendar.push({
+        day: prevMonthDays - i,
+        isCurrentMonth: false
+      })
+    }
+    
+    // Current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      calendar.push({
+        day: i,
+        isCurrentMonth: true,
+        isToday: i === this.data.today,
+        isPunched: punchedDays.includes(i)
+      })
+    }
     
     // Next month filler
     const totalSlots = 42 // 6 weeks

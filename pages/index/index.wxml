@@ -1,7 +1,7 @@
 <view class="container">
   <!-- 自定义导航栏 -->
   <view class="nav-bar" style="height: {{navHeight}}px; padding-top: {{statusBarHeight}}px;">
-    <view class="nav-title">学习打卡</view>
+    <view class="nav-title">今日打卡</view>
   </view>
 
   <!-- 占位，防止内容被导航栏遮挡 -->

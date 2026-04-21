@@ -1,4 +1,4 @@
 {
-  "navigationBarTitleText": "打卡记录",
+  "navigationStyle": "custom",
   "usingComponents": {}
 }
