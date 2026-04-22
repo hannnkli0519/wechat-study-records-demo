@@ -206,6 +206,35 @@
   margin-bottom: 15rpx;
 }
 
+.submit-row {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.submit-tip {
+  font-size: 24rpx;
+  color: #94a3b8;
+}
+
+.submit-btn {
+  background: #07c160;
+  color: #fff;
+  font-size: 28rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 36rpx;
+}
+
+.submit-btn[disabled] {
+  background: #e2e8f0;
+  color: #94a3b8;
+}
+
 .quote-card {
   margin: 30rpx;
   padding: 40rpx;

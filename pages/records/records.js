@@ -1,5 +1,3 @@
-const util = require('../../utils/util.js')
-
 Page({
   data: {
     currentYear: 0,
@@ -50,36 +48,43 @@ Page({
     wx.showLoading({ title: '加载中...' })
     wx.cloud.callFunction({
       name: 'punch_manager',
-      data: { action: 'getRecords' },
+      data: {
+        action: 'getRecords',
+        data: { year: this.data.currentYear, month: this.data.currentMonth }
+      },
       success: res => {
         wx.hideLoading()
         if (res.result.success) {
-          const rawHistory = res.result.data
-          // 格式化历史记录
-          const history = rawHistory.map(item => ({
-            date: item.dateStr ? item.dateStr.split('-').slice(1).join('月') + '日' : '未知',
-            time: item.timeStr || '',
-            content: item.content
-          }))
-          
-          // 获取已打卡日期列表（去重）用于日历
+          const payload = res.result.data || { checkins: [], entries: [] }
+          const checkins = payload.checkins || []
+          const entries = payload.entries || []
+
           const punchedDaysSet = new Set()
-          rawHistory.forEach(item => {
-            const d = new Date(item.createTime)
-            if (d.getFullYear() === this.data.currentYear && (d.getMonth() + 1) === this.data.currentMonth) {
-              punchedDaysSet.add(d.getDate())
+          checkins.forEach(item => {
+            if (item.dateStr && item.dateStr.length >= 10) {
+              const day = parseInt(item.dateStr.slice(8, 10), 10)
+              if (!Number.isNaN(day)) punchedDaysSet.add(day)
             }
           })
           const punchedDays = Array.from(punchedDaysSet)
 
+          const history = entries.map(item => ({
+            date: item.dateStr ? item.dateStr.split('-').slice(1).join('月') + '日' : '未知',
+            time: item.timeStr || '',
+            content: item.content || ''
+          }))
+
           this.setData({ history })
           this.generateCalendar(this.data.currentYear, this.data.currentMonth, punchedDays)
-          
-          // 更新统计数据
+
+          const now = new Date()
+          const isCurrentMonth = this.data.currentYear === now.getFullYear() && this.data.currentMonth === now.getMonth() + 1
+          const daysElapsed = isCurrentMonth ? this.data.today : new Date(this.data.currentYear, this.data.currentMonth, 0).getDate()
+
           const monthlyDays = punchedDays.length
-          const missedDays = this.data.today - monthlyDays
-          const punchRate = Math.round((monthlyDays / this.data.today) * 100) || 0
-          
+          const missedDays = daysElapsed - monthlyDays
+          const punchRate = Math.round((monthlyDays / daysElapsed) * 100) || 0
+
           this.setData({
             'stats.monthlyDays': monthlyDays,
             'stats.missedDays': missedDays < 0 ? 0 : missedDays,

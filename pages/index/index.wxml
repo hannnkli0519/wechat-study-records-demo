@@ -49,6 +49,7 @@
         placeholder-class="placeholder"
         bindinput="handleInput"
         maxlength="200"
+        value="{{content}}"
       ></textarea>
       <view class="input-footer">
         <view class="input-actions">
@@ -74,6 +75,11 @@
           bindtap="previewImage"
           data-src="{{item}}"
         ></image>
+      </view>
+
+      <view class="submit-row">
+        <view class="submit-tip">今日已提交 {{todayEntryCount}} 条</view>
+        <button class="submit-btn" bindtap="submitEntry" disabled="{{content.length === 0 && images.length === 0}}">提交</button>
       </view>
     </view>
 
